@@ -51,11 +51,11 @@ public class ValidarUsuario {
         return repository.buscarPorId(id);
     }
 
-    void deletar(UUID id) {
+    public void deletar(UUID id) {
         repository.deletar(id);
     }
 
-    void logar(Usuario u) throws AutenticacaoInvalidaException {
+    public void logar(Usuario u) throws AutenticacaoInvalidaException {
         for (Usuario usuario : listarTodos()) {
             if (usuario.getLogin().equals(u.getLogin()) &&
                     usuario.getSenha().equals(u.getSenha())) {

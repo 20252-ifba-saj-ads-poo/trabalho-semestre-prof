@@ -2,6 +2,8 @@ package br.edu.ifba.saj.fwads;
 
 import java.io.IOException;
 
+import br.edu.ifba.saj.fwads.model.Usuario;
+import br.edu.ifba.saj.fwads.servico.ValidarUsuario;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,6 +47,8 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        ValidarUsuario validarUsuario = new ValidarUsuario(); 
+        validarUsuario.salvar(new Usuario("admin", "admin"));
         launch();
     }
 
