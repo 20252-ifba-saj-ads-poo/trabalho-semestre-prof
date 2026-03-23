@@ -1,6 +1,8 @@
 package br.edu.ifba.saj.fwads.model;
 
-public class Autor {
+import java.util.UUID;
+
+public class Autor extends AbstractModel<UUID> {
     private String nome;
     private String email;
     private String CPF;

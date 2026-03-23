@@ -1,16 +1,17 @@
 package br.edu.ifba.saj.fwads.controller;
 
-import br.edu.ifba.saj.fwads.Biblioteca;
+import br.edu.ifba.saj.fwads.exception.AutenticacaoInvalidaException;
 import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.model.Livro;
+import br.edu.ifba.saj.fwads.model.Usuario;
+import br.edu.ifba.saj.fwads.servico.ValidarAutor;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
 
 public class CadLivroController {
@@ -32,8 +33,13 @@ public class CadLivroController {
         new Alert(AlertType.INFORMATION, 
         "Cadastrando Livro(Fake):"+novoLivro.toString()).showAndWait();
         limparTela();
-      
 
+        //try {
+        //    //validarUsuario.logar(new Usuario("1leandro", "leandro"));
+        //    //showFXML("Master");
+        //} catch (AutenticacaoInvalidaException e) {
+        //    System.out.print("Erro no login");
+        //}
     }
 
     @FXML 
@@ -49,7 +55,7 @@ public class CadLivroController {
 
             @Override
             public Autor fromString(String stringAutor) {
-                return Biblioteca.listaAutores
+                return new ValidarAutor().listarTodos()
                     .stream()
                     .filter(autor -> stringAutor.equals(autor.getNome() + ":" + autor.getEmail()))
                     .findAny()
@@ -70,7 +76,8 @@ public class CadLivroController {
     }
 
     private void carregarListaAutores() {
-        slAutor.setItems(Biblioteca.listaAutores);
+        ValidarAutor validarAutor  = new ValidarAutor();
+        slAutor.setItems(FXCollections.observableArrayList(validarAutor.listarTodos()));
     }
 
 }
