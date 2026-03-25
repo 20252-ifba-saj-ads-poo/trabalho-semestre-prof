@@ -20,7 +20,8 @@ public class CadAutorController {
     private MasterController masterController;
     private ListAutorController listAutorController;
 
-    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class);
+    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class, UUID.class, Autor::getNome, Autor::getCPF,
+            Autor::getEmail);
 
     public void setMasterController(MasterController masterController) {
         this.masterController = masterController;

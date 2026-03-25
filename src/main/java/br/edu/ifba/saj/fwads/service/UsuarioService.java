@@ -1,8 +1,8 @@
 package br.edu.ifba.saj.fwads.service;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import br.edu.ifba.saj.fwads.exception.AutenticacaoInvalidaException;
 import br.edu.ifba.saj.fwads.model.Usuario;
@@ -10,12 +10,14 @@ import br.edu.ifba.saj.fwads.model.Usuario;
 public class UsuarioService extends Service<Usuario, UUID> {
 
     public UsuarioService() {
-        super(UUID.class);
+        super(Usuario.class, UUID.class, Usuario::getLogin, Usuario::getSenha, Usuario::getEmail);
     }
 
     public Usuario validaLogin(String login, String senha) throws AutenticacaoInvalidaException {
         try {
-            return buscarPorParametros(Map.of(Usuario::getLogin, login, Usuario::getSenha, senha)).getFirst();
+            Predicate<Usuario> predicateLogin = u -> java.util.Objects.equals(u.getLogin(), login);
+            Predicate<Usuario> predicateSenha = u -> java.util.Objects.equals(u.getSenha(), senha);
+            return buscarPorParametros(predicateLogin, predicateSenha).getFirst();
         } catch (NoSuchElementException e) {
             throw new AutenticacaoInvalidaException(
                     "Não foi possível localizar o usuário " + login + ", ou a senha esta errada");

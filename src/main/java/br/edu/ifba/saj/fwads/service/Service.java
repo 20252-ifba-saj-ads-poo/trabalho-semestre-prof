@@ -1,7 +1,9 @@
 package br.edu.ifba.saj.fwads.service;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.function.Function;
 
 import br.edu.ifba.saj.fwads.model.AbstractModel;
@@ -12,11 +14,16 @@ public class Service<T extends AbstractModel<ID>, ID> {
 
     private GenericDAO<T, ID> repository;
 
+    private final Class<T> tipoClass;
     private final Class<ID> entityClass;
+    private final List<Function<T, ?>> atributosObrigatorios;
 
-    public Service(Class<ID> entityClass) {
+    @SafeVarargs
+    public Service(Class<T> tipoClass, Class<ID> entityClass, Function<T, ?>... atributosObrigatorios) {
+        this.tipoClass = tipoClass;
         this.entityClass = entityClass;
-        repository = new GenericDAOImpl<T, ID>(this.entityClass);
+        this.atributosObrigatorios = Arrays.asList(atributosObrigatorios);
+        this.repository = new GenericDAOImpl<T, ID>(this.tipoClass, this.entityClass);
     }
 
     public List<T> buscarTodos() {
@@ -24,6 +31,9 @@ public class Service<T extends AbstractModel<ID>, ID> {
     }
 
     public ID salvar(T entity) {
+        if (!validar(entity)) {
+            return null;
+        }
         return repository.salvar(entity);
     }
 
@@ -32,6 +42,9 @@ public class Service<T extends AbstractModel<ID>, ID> {
     }
 
     public void update(T entity) {
+        if (!validar(entity)) {
+            return;
+        }
         repository.atualizar(entity);
     }
 
@@ -43,22 +56,31 @@ public class Service<T extends AbstractModel<ID>, ID> {
         return (long) repository.buscarTodos().size();
     }
 
-    public List<T> buscarPorParametros(Map<Function<T, ?>, Object> param) {
+    @SafeVarargs
+    public final List<T> buscarPorParametros(Predicate<T>... predicados) {
+        Predicate<T> filtroCombinado = Arrays.stream(predicados)
+                .reduce(Predicate::and)
+                .orElse(t -> true);
+
         return repository.buscarTodos().stream()
-                .filter(entity -> {
-                    for (Map.Entry<Function<T, ?>, Object> entry : param.entrySet()) {
-                        Object valorNoObjeto = entry.getKey().apply(entity);
-                        Object valorDesejado = entry.getValue();
-                        
-                        if (valorNoObjeto == null && valorDesejado != null) {
-                            return false;
-                        } else if (valorNoObjeto != null && !valorNoObjeto.equals(valorDesejado)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
+                .filter(filtroCombinado)
                 .toList();
+    }
+
+    public boolean validar(T entity) {
+        if (atributosObrigatorios == null || atributosObrigatorios.isEmpty()) {
+            return true;
+        }
+        for (Function<T, ?> getter : atributosObrigatorios) {
+            Object valor = getter.apply(entity);
+            if (Objects.isNull(valor)) {
+                return false;
+            }
+            if (valor instanceof String && ((String) valor).trim().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

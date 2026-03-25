@@ -7,14 +7,13 @@ public class Usuario extends AbstractModel<UUID> {
     private String senha;
     private String email;
 
-    public Usuario(String login, String senha, String email) {
-        this(login, senha);
-        this.email = email;
+    public Usuario() {
     }
 
-    public Usuario(String login, String senha) {
+    public Usuario(String login, String senha, String email) {
         this.login = login;
         this.senha = senha;
+        this.email = email;
     }
 
     public String getLogin() {

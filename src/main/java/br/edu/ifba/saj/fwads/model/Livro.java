@@ -1,10 +1,15 @@
 package br.edu.ifba.saj.fwads.model;
 
-public class Livro {
+import java.util.UUID;
+
+public class Livro extends AbstractModel<UUID> {
     private String titulo;
     private String subTitulo;
     private String ISBN;
     private Autor autor;
+
+    public Livro() {
+    }
 
     public Livro(String titulo, String subTitulo, String iSBN, Autor autor) {
         this.titulo = titulo;

@@ -1,10 +1,10 @@
 package br.edu.ifba.saj.fwads.controller;
 
-import br.edu.ifba.saj.fwads.exception.AutenticacaoInvalidaException;
+import java.util.UUID;
+
 import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.model.Livro;
-import br.edu.ifba.saj.fwads.model.Usuario;
-import br.edu.ifba.saj.fwads.servico.ValidarAutor;
+import br.edu.ifba.saj.fwads.service.Service;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,25 +24,31 @@ public class CadLivroController {
     @FXML
     private ChoiceBox<Autor> slAutor;
 
+    private ListLivroController listLivroController;
+
+    private Service<Livro, UUID> serviceLivro = new Service<>(Livro.class, UUID.class);
+    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class, UUID.class);
+
+    public void setListLivroController(ListLivroController listLivroController) {
+        this.listLivroController = listLivroController;
+    }
+
     @FXML
     void salvarLivro(ActionEvent event) {
         Livro novoLivro = new Livro(txTitulo.getText(),
-                    txSubTitulo.getText(), 
-                    txISBN.getText(),
-                    slAutor.getSelectionModel().getSelectedItem());
-        new Alert(AlertType.INFORMATION, 
-        "Cadastrando Livro(Fake):"+novoLivro.toString()).showAndWait();
+                txSubTitulo.getText(),
+                txISBN.getText(),
+                slAutor.getSelectionModel().getSelectedItem());
+        serviceLivro.salvar(novoLivro);
+        new Alert(AlertType.INFORMATION,
+                "Livro:" + novoLivro.getTitulo() + " cadastrado com sucesso!").showAndWait();
         limparTela();
-
-        //try {
-        //    //validarUsuario.logar(new Usuario("1leandro", "leandro"));
-        //    //showFXML("Master");
-        //} catch (AutenticacaoInvalidaException e) {
-        //    System.out.print("Erro no login");
-        //}
+        if (listLivroController != null) {
+            listLivroController.loadLivroList();
+        }
     }
 
-    @FXML 
+    @FXML
     private void initialize() {
         slAutor.setConverter(new StringConverter<Autor>() {
             @Override
@@ -55,14 +61,14 @@ public class CadLivroController {
 
             @Override
             public Autor fromString(String stringAutor) {
-                return new ValidarAutor().listarTodos()
-                    .stream()
-                    .filter(autor -> stringAutor.equals(autor.getNome() + ":" + autor.getEmail()))
-                    .findAny()
-                    .orElse(null);                
+                return serviceAutor.buscarTodos()
+                        .stream()
+                        .filter(autor -> stringAutor.equals(autor.getNome() + ":" + autor.getEmail()))
+                        .findAny()
+                        .orElse(null);
             }
         });
-        
+
         carregarListaAutores();
     }
 
@@ -71,13 +77,13 @@ public class CadLivroController {
         txTitulo.setText("");
         txSubTitulo.setText("");
         txISBN.setText("");
-        //Todo REVER
-        slAutor.setSelectionModel(null);
+        slAutor.setValue(null);
+        // new Alert(AlertType.INFORMATION,
+        // serviceLivro.findAll().toString()).showAndWait();
     }
 
     private void carregarListaAutores() {
-        ValidarAutor validarAutor  = new ValidarAutor();
-        slAutor.setItems(FXCollections.observableArrayList(validarAutor.listarTodos()));
+        slAutor.setItems(FXCollections.observableList(serviceAutor.buscarTodos()));
     }
 
 }

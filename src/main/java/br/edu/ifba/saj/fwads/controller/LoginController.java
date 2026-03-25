@@ -7,7 +7,7 @@ package br.edu.ifba.saj.fwads.controller;
 import br.edu.ifba.saj.fwads.App;
 import br.edu.ifba.saj.fwads.exception.AutenticacaoInvalidaException;
 import br.edu.ifba.saj.fwads.model.Usuario;
-import br.edu.ifba.saj.fwads.servico.ValidarUsuario;
+import br.edu.ifba.saj.fwads.service.UsuarioService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -23,13 +23,12 @@ public class LoginController {
     @FXML // fx:id="txUsuario"
     private TextField txUsuario; // Value injected by FXMLLoader
 
-    ValidarUsuario validarUsuario = new ValidarUsuario();
+    UsuarioService validarUsuario = new UsuarioService();
 
     @FXML
     void entrar(ActionEvent event) {
-        Usuario usuario = new Usuario(txUsuario.getText(), txSenha.getText());
         try {
-            validarUsuario.logar(usuario);
+            validarUsuario.validaLogin(txUsuario.getText(), txSenha.getText());
             new Alert(AlertType.INFORMATION, "Usuário e senha corretos").showAndWait();
             App.setRoot("controller/Master.fxml");
         } catch (AutenticacaoInvalidaException e) {

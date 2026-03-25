@@ -1,9 +1,9 @@
 package br.edu.ifba.saj.fwads.controller;
 
 import br.edu.ifba.saj.fwads.App;
-import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.model.Livro;
 import br.edu.ifba.saj.fwads.service.Service;
+import java.util.UUID;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +38,7 @@ public class ListLivroController {
     }
 
     public void loadLivroList() {
-        tblAutor.setItems(FXCollections.observableList(new Service(Livro.class).buscarTodos()));
+        tblAutor.setItems(FXCollections.observableList(new Service<>(Livro.class, UUID.class).buscarTodos()));
     }
 
     @FXML

@@ -5,6 +5,8 @@ import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.service.Service;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import java.util.UUID;
+
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,7 +25,6 @@ public class ListAutorController {
     @FXML
     private TableColumn<Autor, String> columnCPF;
 
-
     @FXML
     public void initialize() {
         columnNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
@@ -31,21 +32,21 @@ public class ListAutorController {
         columnCPF.setCellValueFactory(new PropertyValueFactory<>("CPF"));
         loadAutorList();
     }
-    
+
     public void loadAutorList() {
-        tblAutor.setItems(FXCollections.observableList(new Service(Autor.class).findAll()));
+        tblAutor.setItems(FXCollections.observableList(new Service<>(Autor.class, UUID.class).buscarTodos()));
     }
 
     @FXML
     public void showNovoAutor() {
-        
-        Stage stage = new Stage();            
-        Scene scene = new Scene(App.loadFXML("controller/CadAutor.fxml"), 800, 600);            
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(App.loadFXML("controller/CadAutor.fxml"), 800, 600);
         stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL); 
+        stage.initModality(Modality.APPLICATION_MODAL);
         CadAutorController controller = (CadAutorController) App.getController();
         controller.setListAutorController(this);
-        stage.showAndWait();            
+        stage.showAndWait();
     }
 
 }

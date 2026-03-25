@@ -44,10 +44,11 @@
     -fx-background-color: darkgreen;
 }
 
-.btn-menu-selected {
+.btn-menu:selected {
     -fx-background-color: lightgreen;
     -fx-background-radius: 0;
 }
+
 .btn-menu {
     -fx-background-color: green;
     -fx-background-radius: 0;
@@ -76,22 +77,22 @@
     -fx-background-color: darkgreen;
 }
 
-.avatar{
+.avatar {
     -fx-background-radius: 25px;
     -fx-border-radius: 25px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
     -fx-padding: 10;
     -fx-background-color: firebrick;
 }
 
 .google {
-    -fx-background-color:  lightgreen;
+    -fx-background-color: lightgreen;
     -fx-background-radius: 15px;
     -fx-border-color: green;
     -fx-border-radius: 15px;
-    -fx-border-width:  1px;    
+    -fx-border-width: 1px;
 }
 
 .erro-class {
-    -fx-background-color:  red;
+    -fx-background-color: red;
 }
