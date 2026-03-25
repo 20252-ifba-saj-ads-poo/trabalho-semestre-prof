@@ -3,6 +3,7 @@ package br.edu.ifba.saj.fwads.controller;
 import java.util.UUID;
 
 import br.edu.ifba.saj.fwads.model.Autor;
+import br.edu.ifba.saj.fwads.service.AutorService;
 import br.edu.ifba.saj.fwads.service.Service;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,8 +21,7 @@ public class CadAutorController {
     private MasterController masterController;
     private ListAutorController listAutorController;
 
-    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class, UUID.class, Autor::getNome, Autor::getCPF,
-            Autor::getEmail);
+    private AutorService serviceAutor = new AutorService();
 
     public void setMasterController(MasterController masterController) {
         this.masterController = masterController;
@@ -36,12 +36,15 @@ public class CadAutorController {
         Autor novoAutor = new Autor(txNome.getText(),
                 txEmail.getText(),
                 txCPF.getText());
-        serviceAutor.salvar(novoAutor);
-        new Alert(AlertType.INFORMATION,
-                "Autor:" + novoAutor.getNome() + " cadastrado com sucesso").showAndWait();
-        limparTela();
-        if (listAutorController != null) {
-            listAutorController.loadAutorList();
+        if (serviceAutor.salvar(novoAutor) != null) {
+            new Alert(AlertType.INFORMATION,
+                    "Autor:" + novoAutor.getNome() + " cadastrado com sucesso").showAndWait();
+            limparTela();
+            if (listAutorController != null) {
+                listAutorController.loadAutorList();
+            }
+        } else {
+            new Alert(AlertType.ERROR, "Erro ao cadastrar autor").showAndWait();
         }
     }
 

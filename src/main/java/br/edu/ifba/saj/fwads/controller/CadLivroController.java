@@ -1,9 +1,11 @@
 package br.edu.ifba.saj.fwads.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.model.Livro;
+import br.edu.ifba.saj.fwads.service.AutorService;
 import br.edu.ifba.saj.fwads.service.Service;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -27,7 +29,6 @@ public class CadLivroController {
     private ListLivroController listLivroController;
 
     private Service<Livro, UUID> serviceLivro = new Service<>(Livro.class, UUID.class);
-    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class, UUID.class);
 
     public void setListLivroController(ListLivroController listLivroController) {
         this.listLivroController = listLivroController;
@@ -39,12 +40,18 @@ public class CadLivroController {
                 txSubTitulo.getText(),
                 txISBN.getText(),
                 slAutor.getSelectionModel().getSelectedItem());
-        serviceLivro.salvar(novoLivro);
-        new Alert(AlertType.INFORMATION,
-                "Livro:" + novoLivro.getTitulo() + " cadastrado com sucesso!").showAndWait();
-        limparTela();
-        if (listLivroController != null) {
-            listLivroController.loadLivroList();
+
+        if (serviceLivro.salvar(novoLivro) != null) {
+            new Alert(AlertType.INFORMATION,
+                    "Livro:" + novoLivro.getTitulo() + " cadastrado com sucesso!").showAndWait();
+            limparTela();
+            if (listLivroController != null) {
+                listLivroController.loadLivroList();
+            }
+
+        } else {
+            new Alert(AlertType.ERROR,
+                    "Erro ao cadastrar o livro:" + novoLivro.getTitulo()).showAndWait();
         }
     }
 
@@ -61,7 +68,7 @@ public class CadLivroController {
 
             @Override
             public Autor fromString(String stringAutor) {
-                return serviceAutor.buscarTodos()
+                return buscarAutores()
                         .stream()
                         .filter(autor -> stringAutor.equals(autor.getNome() + ":" + autor.getEmail()))
                         .findAny()
@@ -83,7 +90,11 @@ public class CadLivroController {
     }
 
     private void carregarListaAutores() {
-        slAutor.setItems(FXCollections.observableList(serviceAutor.buscarTodos()));
+        slAutor.setItems(FXCollections.observableList(buscarAutores()));
+    }
+
+    private List<Autor> buscarAutores() {
+        return new AutorService().buscarTodos();
     }
 
 }
