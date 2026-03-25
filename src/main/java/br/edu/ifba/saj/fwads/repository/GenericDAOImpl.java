@@ -33,7 +33,7 @@ public class GenericDAOImpl<T extends AbstractModel<ID>, ID> implements GenericD
     @Override
     public void atualizar(T entidade) {
         entidade.setUpdatedAt(LocalDateTime.now());
-        bancoDeDados.put(entidade.getId(), entidade);        
+        bancoDeDados.put(entidade.getId(), entidade);
     }
 
     @Override

@@ -1,37 +1,47 @@
 package br.edu.ifba.saj.fwads.controller;
 
+import java.util.UUID;
+
 import br.edu.ifba.saj.fwads.model.Autor;
-import br.edu.ifba.saj.fwads.servico.ValidarAutor;
+import br.edu.ifba.saj.fwads.service.Service;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 
 public class CadAutorController {
-
+    @FXML
+    private TextField txNome;
+    @FXML
+    private TextField txEmail;
     @FXML
     private TextField txCPF;
 
-    @FXML
-    private TextField txEmail;
+    private MasterController masterController;
+    private ListAutorController listAutorController;
 
-    @FXML
-    private TextField txNome;
+    private Service<Autor, UUID> serviceAutor = new Service<>(Autor.class);
 
-    private ValidarAutor validarAutor = new ValidarAutor();
+    public void setMasterController(MasterController masterController) {
+        this.masterController = masterController;
+    }
+
+    public void setListAutorController(ListAutorController listAutorController) {
+        this.listAutorController = listAutorController;
+    }
 
     @FXML
     private void salvarAutor() {
         Autor novoAutor = new Autor(txNome.getText(),
                 txEmail.getText(),
                 txCPF.getText());
-        if (!validarAutor.salvar(novoAutor)) {
-            new Alert(AlertType.WARNING,
-                    "Autor não pode ser cadastrado pois não preencheu todas as informações obrigatórios").showAndWait();
-        } else {
-            new Alert(AlertType.INFORMATION, "Cadastrando Autor:" + novoAutor.getNome()).showAndWait();
-        }
+        serviceAutor.salvar(novoAutor);
+        new Alert(AlertType.INFORMATION,
+                "Autor:" + novoAutor.getNome() + " cadastrado com sucesso").showAndWait();
         limparTela();
+        if (listAutorController != null) {
+            listAutorController.loadAutorList();
+        }
     }
 
     @FXML
@@ -39,6 +49,9 @@ public class CadAutorController {
         txNome.setText("");
         txEmail.setText("");
         txCPF.setText("");
+        // masterController.showFXMLFile("ListAutor.fxml");
+        // new Alert(AlertType.INFORMATION,
+        // serviceAutor.findAll().toString()).showAndWait();
     }
 
 }

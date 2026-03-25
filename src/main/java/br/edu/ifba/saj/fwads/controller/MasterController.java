@@ -1,6 +1,8 @@
 package br.edu.ifba.saj.fwads.controller;
 
 import br.edu.ifba.saj.fwads.App;
+import br.edu.ifba.saj.fwads.model.Usuario;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +20,21 @@ import javafx.scene.shape.Circle;
 public class MasterController {
 
     @FXML
+    private Button menuItemCadAutor;
+
+    @FXML
+    private Button menuItemCadLivro;
+
+    @FXML
+    private Button menuItemHome;
+
+    @FXML
+    private Button menuItemListAutor;
+
+    @FXML
+    private Button menuItemListLivro;
+
+    @FXML
     private BorderPane masterPane;
 
     @FXML
@@ -28,6 +45,13 @@ public class MasterController {
 
     @FXML
     private Circle userPicture;
+
+    private Usuario usuarioLogado;
+
+    public void setUsuarioLogado(Usuario usuarioLogado) {
+        this.usuarioLogado = usuarioLogado;
+        setEmail(usuarioLogado.getEmail());
+    }
 
     @FXML
     void logOff(MouseEvent event) {
@@ -55,37 +79,56 @@ public class MasterController {
     private void limparBotoes(Object source) {
         menu.getChildren().forEach((node) -> {
             if (node instanceof Button btn) {
-                btn.getStyleClass().clear();
-                btn.getStyleClass().add("btn-menu");
+                node.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), false);
             }
         }
 
         );
         if (source instanceof Button btn) {
-            btn.getStyleClass().clear();
-            btn.getStyleClass().add("btn-menu-selected");
+            btn.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), true);
         }
     }
 
     @FXML
-    void showAutores(ActionEvent event) {
+    void showCadAutor(ActionEvent event) {
         limparBotoes(event.getSource());
-        showFXMLFile("CadAutor.fxml");
+        CadAutorController controller = (CadAutorController) showFXMLFile("CadAutor.fxml");
+        controller.setMasterController(this);
     }
 
     @FXML
-    void showLivros(ActionEvent event) {
+    void showListAutor(ActionEvent event) {
+        limparBotoes(event.getSource());
+        showFXMLFile("ListAutor.fxml");
+    }
+
+    @FXML
+    void showListLivro(ActionEvent event) {
+        limparBotoes(event.getSource());
+        showFXMLFile("ListLivro.fxml");
+    }
+
+    @FXML
+    void showCadLivro(ActionEvent event) {
         limparBotoes(event.getSource());
         showFXMLFile("CadLivro.fxml");
     }
 
-    private void showFXMLFile(String resourceName) {
-        try {            
-            Pane fxmlCarregado = FXMLLoader.load(getClass().getResource(resourceName));
+    public Object showFXMLFile(String resourceName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourceName));
+            Pane fxmlCarregado = loader.load();
             masterPane.setCenter(fxmlCarregado);
+            return loader.getController();
+
         } catch (Exception e) {
             new Alert(AlertType.ERROR, "Erro ao carregar o arquivo " + resourceName).showAndWait();
             e.printStackTrace();
         }
+        return null;
+    }
+
+    private void setEmail(String email) {
+        userEmail.setText(email);
     }
 }
