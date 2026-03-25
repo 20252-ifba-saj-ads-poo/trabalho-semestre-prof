@@ -1,12 +1,11 @@
 package br.edu.ifba.saj.fwads.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import br.edu.ifba.saj.fwads.model.Autor;
 import br.edu.ifba.saj.fwads.model.Livro;
 import br.edu.ifba.saj.fwads.service.AutorService;
-import br.edu.ifba.saj.fwads.service.Service;
+import br.edu.ifba.saj.fwads.service.LivroService;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,7 +27,7 @@ public class CadLivroController {
 
     private ListLivroController listLivroController;
 
-    private Service<Livro, UUID> serviceLivro = new Service<>(Livro.class, UUID.class);
+    private LivroService serviceLivro = new LivroService();
 
     public void setListLivroController(ListLivroController listLivroController) {
         this.listLivroController = listLivroController;
@@ -84,13 +83,15 @@ public class CadLivroController {
         txTitulo.setText("");
         txSubTitulo.setText("");
         txISBN.setText("");
-        slAutor.setValue(null);
+        if (slAutor.getSelectionModel() != null && slAutor.getSelectionModel().getSelectedItem() != null) {
+            slAutor.getSelectionModel().clearSelection();
+        }
         // new Alert(AlertType.INFORMATION,
         // serviceLivro.findAll().toString()).showAndWait();
     }
 
     private void carregarListaAutores() {
-        slAutor.setItems(FXCollections.observableList(buscarAutores()));
+        slAutor.setItems(FXCollections.observableArrayList(buscarAutores()));
     }
 
     private List<Autor> buscarAutores() {
